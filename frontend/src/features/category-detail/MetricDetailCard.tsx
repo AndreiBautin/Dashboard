@@ -9,7 +9,21 @@ import { formatMetricValue } from "@/lib/formatValue";
 import { metricStatusMeta } from "@/lib/metricStatus";
 import { TrendChart } from "@/features/dashboard/TrendChart";
 
-export function MetricDetailCard({ metric }: { metric: MetricDetail }) {
+/**
+ * @param reloadToken Changes whenever the page has reloaded its data after a
+ *   save. The trend is fetched here rather than by the page, so without this
+ *   the effect below would only re-run when the metric id changed — and
+ *   recording this month's entry would refresh the value and the score while
+ *   leaving the chart and the "since last month" delta still showing last
+ *   month's figures.
+ */
+export function MetricDetailCard({
+  metric,
+  reloadToken,
+}: {
+  metric: MetricDetail;
+  reloadToken: number;
+}) {
   const [points, setPoints] = useState<MetricTrendPoint[] | null>(null);
   const meta = metricStatusMeta[metric.status];
 
@@ -27,7 +41,7 @@ export function MetricDetailCard({ metric }: { metric: MetricDetail }) {
     return () => {
       cancelled = true;
     };
-  }, [metric.metricDefinitionId]);
+  }, [metric.metricDefinitionId, reloadToken]);
 
   const delta =
     points && points.length >= 2 ? points[points.length - 1].value - points[points.length - 2].value : null;

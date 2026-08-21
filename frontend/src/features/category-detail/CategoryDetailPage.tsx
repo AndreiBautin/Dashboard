@@ -27,6 +27,11 @@ export function CategoryDetailPage({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEntryModalOpen, setIsEntryModalOpen] = useState(false);
+  // Bumped after every successful reload and passed down so each metric card
+  // refetches its own trend. Without it, saving this month's entry updates
+  // the values and scores while the charts and deltas keep showing last
+  // month's data.
+  const [reloadToken, setReloadToken] = useState(0);
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -40,6 +45,7 @@ export function CategoryDetailPage({
       }
 
       setDetail(await fetchCategoryDetail(category.id));
+      setReloadToken((token) => token + 1);
     } catch (err) {
       setError(err instanceof Error ? err.message : `Failed to load ${categoryName}.`);
     } finally {
@@ -123,7 +129,7 @@ export function CategoryDetailPage({
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {detail.metrics.map((metric) => (
-          <MetricDetailCard key={metric.metricDefinitionId} metric={metric} />
+          <MetricDetailCard key={metric.metricDefinitionId} metric={metric} reloadToken={reloadToken} />
         ))}
       </div>
       <Modal isOpen={isEntryModalOpen} onClose={() => setIsEntryModalOpen(false)} title="This month's numbers">
