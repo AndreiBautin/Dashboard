@@ -24,7 +24,23 @@ jobs:
 
       - uses: actions/setup-dotnet@v4
         with:
+          # Pinned explicitly rather than left to global.json alone. The runner
+          # image ships a newer SDK, and relying on roll-forward resolved to
+          # it — which changes the WebAssembly workload id out from under the
+          # build (wasm-tools vs wasm-tools-net9).
+          dotnet-version: "9.0.x"
           global-json-file: backend/global.json
+
+      # The solution includes Vantage.Wasm, so even a plain restore of the
+      # solution needs the WebAssembly workload present.
+      #
+      # `workload restore` rather than `workload install wasm-tools`: the
+      # workload id is SDK-version dependent (wasm-tools on one SDK,
+      # wasm-tools-net9 on another), and restore reads the requirement from
+      # the project instead of hardcoding a name that is right on one machine
+      # and wrong on another.
+      - name: Install the WebAssembly workload
+        run: dotnet workload restore backend/src/Vantage.Wasm/Vantage.Wasm.csproj
 
       # Locked mode: fail if a resolved package version differs from what
       # packages.lock.json records, rather than quietly building against
@@ -81,6 +97,11 @@ jobs:
 
       - uses: actions/setup-dotnet@v4
         with:
+          # Pinned explicitly rather than left to global.json alone. The runner
+          # image ships a newer SDK, and relying on roll-forward resolved to
+          # it — which changes the WebAssembly workload id out from under the
+          # build (wasm-tools vs wasm-tools-net9).
+          dotnet-version: "9.0.x"
           global-json-file: backend/global.json
 
       - uses: actions/setup-node@v4
@@ -89,11 +110,15 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
-      # Required to target browser-wasm. Not installed by default on the
-      # runner, and its absence is the single most likely reason this job
-      # fails on a fresh runner image.
-      - name: Install the wasm-tools workload
-        run: dotnet workload install wasm-tools
+      # Required to target browser-wasm; not installed on the runner image.
+      #
+      # `workload restore` rather than `workload install wasm-tools`: the
+      # workload id is SDK-version dependent (the runner needs
+      # `wasm-tools-net9`, while `wasm-tools` resolves locally), and restore
+      # reads the requirement from the project itself instead of hardcoding
+      # a name that is right on one machine and wrong on another.
+      - name: Install the WebAssembly workload
+        run: dotnet workload restore backend/src/Vantage.Wasm/Vantage.Wasm.csproj
 
       - name: Install (frozen lockfile)
         run: npm ci
@@ -128,6 +153,11 @@ jobs:
 
       - uses: actions/setup-dotnet@v4
         with:
+          # Pinned explicitly rather than left to global.json alone. The runner
+          # image ships a newer SDK, and relying on roll-forward resolved to
+          # it — which changes the WebAssembly workload id out from under the
+          # build (wasm-tools vs wasm-tools-net9).
+          dotnet-version: "9.0.x"
           global-json-file: backend/global.json
 
       - uses: actions/setup-node@v4
@@ -146,6 +176,9 @@ jobs:
       - name: npm audit
         run: npm audit --audit-level=high
         working-directory: frontend
+
+      - name: Install the WebAssembly workload
+        run: dotnet workload restore backend/src/Vantage.Wasm/Vantage.Wasm.csproj
 
       - name: Restore (locked)
         run: dotnet restore backend/Vantage.sln -p:RestoreLockedMode=true

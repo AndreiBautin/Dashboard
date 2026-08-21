@@ -29,6 +29,11 @@ jobs:
 
       - uses: actions/setup-dotnet@v4
         with:
+          # Pinned explicitly rather than left to global.json alone. The runner
+          # image ships a newer SDK, and relying on roll-forward resolved to
+          # it — which changes the WebAssembly workload id out from under the
+          # build (wasm-tools vs wasm-tools-net9).
+          dotnet-version: "9.0.x"
           global-json-file: backend/global.json
 
       - uses: actions/setup-node@v4
@@ -37,8 +42,9 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
-      - name: Install the wasm-tools workload
-        run: dotnet workload install wasm-tools
+      # See ci.yml for why this is `restore` and not `install wasm-tools`.
+      - name: Install the WebAssembly workload
+        run: dotnet workload restore backend/src/Vantage.Wasm/Vantage.Wasm.csproj
 
       - name: Install (frozen lockfile)
         run: npm ci
