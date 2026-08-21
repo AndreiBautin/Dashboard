@@ -160,9 +160,15 @@ files and comments. Scrubbing the working tree is therefore *not* sufficient: th
 survive in history and would be published, indexed, and forked the moment the
 repository goes public.
 
-**Decision taken:** history is replaced with a single clean initial commit and
-force-pushed. Eleven solo commits with no collaborators depending on them is a small
-price for a provably clean history.
+**Decision taken:** history is replaced with a single clean initial commit.
+Eleven solo commits with no collaborators depending on them is a small price for a
+provably clean history.
+
+**What actually happened, recorded because the plan was insufficient:** the
+force-push left the old commits fetchable by SHA on GitHub — a force-push does not
+delete objects from a remote. Publishing that repository would have exposed the data
+to anyone holding the SHA. The clean commit was therefore pushed to a **new**
+repository that has never contained it. See [SECURITY.md](SECURITY.md) §S1.
 
 `KeyRelationshipKind.DateWithWife` / `VisitedMother` stay. They are genuine product
 features in the domain model and in a migration — not leaked values — and they make

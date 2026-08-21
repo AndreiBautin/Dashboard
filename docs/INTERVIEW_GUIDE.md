@@ -182,8 +182,24 @@ Then the finding you actually want to talk about:
 >
 > I replaced it with a generated fixture, made the guarantee structural rather
 > than careful — generate never capture, separate store, seed only into empty
-> storage — added tests that scan the seeded output for anything that looks
-> personal, and rewrote history to a single clean commit before publishing.
+> storage — and added tests that scan the seeded output for anything that looks
+> personal.
+
+**The part worth telling, because it's the mistake I nearly made:**
+
+> I squashed the history to one clean commit and force-pushed, and then
+> checked whether that had actually worked. It hadn't. Force-pushing doesn't
+> delete anything on GitHub — the old commit was still fetchable by SHA
+> through the API, with all the figures in it. If I'd flipped the repo to
+> public at that point I'd have published exactly what I was trying to remove.
+>
+> So I pushed the clean commit to a brand-new repository instead, one that had
+> never held the data in any commit. The takeaway I'd generalise: a force-push
+> is not a delete. If it's a secret, rotate it. If it's data you can't rotate,
+> publish from somewhere it has never been.
+
+That answer is worth more than the original finding, because it shows you
+verified a remediation instead of assuming it worked.
 
 If asked what you *didn't* do:
 

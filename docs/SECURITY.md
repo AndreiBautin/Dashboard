@@ -65,9 +65,23 @@ public.
    braces: they read as generic test names, but "none appear" is a cleaner
    property to state than "they appear but coincidentally".
 4. Removing the real credit score from a `MetricRatingCalculator` doc comment.
-5. **Replacing git history with a single clean initial commit** before making
-   the repository public. Eleven solo commits, no collaborators depending on
-   them.
+5. **Publishing from a repository that never held the data.** This step did not
+   go as planned, and the detour is the useful part.
+
+   The original repository's history was squashed to a single clean commit and
+   force-pushed while it was still private. That was *not* sufficient:
+   force-pushing does not delete the old objects from GitHub, and the previous
+   commit remained fetchable by SHA through the API, still containing every
+   figure above. Making that repository public would have exposed them to
+   anyone who knew or recorded the SHA.
+
+   So the clean commit was pushed to a **new** repository instead
+   (`AndreiBautin/vantage`), which has never contained the data in any commit,
+   reachable or otherwise. The original repository stays private.
+
+   The general lesson: a force-push is not a delete. If secrets have reached a
+   remote, rotate them; if data cannot be rotated, publish from somewhere it
+   has never been.
 6. Adding `DemoDatasetPrivacyTests`, which fails the build if any of those
    specific figures or names reappears, or if anything email-, phone-, URL-, or
    credential-shaped enters the fixture.
