@@ -21,8 +21,8 @@ import { fileURLToPath } from 'node:url'
 
 const frontendDir = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const repoRoot = resolve(frontendDir, '..')
-const wasmProject = join(repoRoot, 'backend', 'src', 'Vantage.Wasm', 'Vantage.Wasm.csproj')
-const appBundle = join(repoRoot, 'backend', 'src', 'Vantage.Wasm', 'bin', 'Release', 'net9.0', 'browser-wasm', 'AppBundle')
+const wasmProject = join(repoRoot, 'backend', 'src', 'Dashboard.Wasm', 'Dashboard.Wasm.csproj')
+const appBundle = join(repoRoot, 'backend', 'src', 'Dashboard.Wasm', 'bin', 'Release', 'net9.0', 'browser-wasm', 'AppBundle')
 
 /** Where the runtime is served from, relative to the site root. Mirrored in demoApi.ts. */
 const wasmPublicDir = join(frontendDir, 'public', 'dashboard-wasm')

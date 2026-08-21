@@ -7,7 +7,7 @@ import type {
   MetricTrendPoint,
   SocialSummary,
 } from "@/lib/apiTypes";
-import type { VantageApi } from "@/lib/apiContract";
+import type { DashboardApi } from "@/lib/apiContract";
 
 /**
  * Talks to the ASP.NET Core API over HTTP/JSON. This is the real app: the
@@ -46,7 +46,7 @@ async function send(path: string, method: "POST" | "PUT", body: unknown, failure
   }
 }
 
-export const httpApi: VantageApi = {
+export const httpApi: DashboardApi = {
   fetchDashboardSummary: () => getJson<DashboardSummary>("/api/dashboard"),
 
   fetchMetricTrend: (metricDefinitionId) =>

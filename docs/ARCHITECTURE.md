@@ -13,20 +13,20 @@ Four .NET projects plus two that exist only for the demo, and a React SPA.
 │  frontend/            React 19 · Vite · Tailwind · React Router          │
 │                                                                          │
 │      lib/api.ts  ──  one contract, two adapters                          │
-│           ├── adapters/httpApi.ts   ── fetch ──►  Vantage.Api            │
-│           └── adapters/demoApi.ts   ── interop ►  Vantage.Wasm           │
+│           ├── adapters/httpApi.ts   ── fetch ──►  Dashboard.Api            │
+│           └── adapters/demoApi.ts   ── interop ►  Dashboard.Wasm           │
 └──────────────────────────────────────────────────────────────────────────┘
                   │                                    │
                   ▼                                    ▼
 ┌──────────────────────────────┐      ┌───────────────────────────────────┐
-│  Vantage.Api                 │      │  Vantage.Wasm                     │
+│  Dashboard.Api                 │      │  Dashboard.Wasm                     │
 │  controllers, composition    │      │  [JSExport] façade                │
 │  root, health checks, CORS   │      │  (browser only)                   │
 └──────────────────────────────┘      └───────────────────────────────────┘
                   │                                    │
                   ▼                                    ▼
 ┌──────────────────────────────┐      ┌───────────────────────────────────┐
-│  Vantage.Infrastructure      │      │  Vantage.Demo                     │
+│  Dashboard.Infrastructure      │      │  Dashboard.Demo                     │
 │  EF Core · Npgsql            │      │  in-memory repositories           │
 │  repository implementations  │      │  + the generated fixture          │
 └──────────────────────────────┘      └───────────────────────────────────┘
@@ -34,21 +34,21 @@ Four .NET projects plus two that exist only for the demo, and a React SPA.
                   └────────────────┬───────────────────┘
                                    ▼
                   ┌──────────────────────────────────┐
-                  │  Vantage.Application             │
+                  │  Dashboard.Application             │
                   │  services · DTOs                 │
                   │  repository INTERFACES           │
                   └──────────────────────────────────┘
                                    │
                                    ▼
                   ┌──────────────────────────────────┐
-                  │  Vantage.Domain                  │
+                  │  Dashboard.Domain                  │
                   │  entities · evaluators · rating  │
                   │  ZERO dependencies               │
                   └──────────────────────────────────┘
 ```
 
-Dependencies point inward, always. `Vantage.Domain` references no project and
-no NuGet package at all. `Vantage.Application` references Domain plus
+Dependencies point inward, always. `Dashboard.Domain` references no project and
+no NuGet package at all. `Dashboard.Application` references Domain plus
 `Microsoft.Extensions.DependencyInjection.Abstractions` and nothing else — in
 particular, no EF Core, no ASP.NET Core.
 
@@ -56,7 +56,7 @@ particular, no EF Core, no ASP.NET Core.
 
 ## What each layer is responsible for
 
-**`Vantage.Domain`** — the rules that would still be true if the app had no
+**`Dashboard.Domain`** — the rules that would still be true if the app had no
 database and no HTTP. Entities (`Category`, `MetricDefinition`,
 `MonthlySnapshot`, `Friend`, `KeyRelationship`), the five evaluation
 strategies, and the rating maths. Entities protect their own invariants:
@@ -65,24 +65,24 @@ strategies, and the rating maths. Entities protect their own invariants:
 (`MonthlySnapshot.AddMetricSnapshot`). `Friend.LogHangout` only ever moves the
 date *forward*, so a late entry can't overwrite a more recent one.
 
-**`Vantage.Application`** — use cases. One service per question the app
+**`Dashboard.Application`** — use cases. One service per question the app
 answers: `DashboardService` ("how am I doing overall?"), `CategoryDetailService`,
 `SocialService`, `MetricEntryService`, `SettingsService`. It also *declares*
 what it needs from persistence — seven repository interfaces plus `IUnitOfWork`
 — without knowing what implements them.
 
-**`Vantage.Infrastructure`** — the EF Core implementations of those interfaces,
+**`Dashboard.Infrastructure`** — the EF Core implementations of those interfaces,
 the `DbContext`, entity configurations, migrations, and the database health
 check. The only project that knows PostgreSQL exists.
 
-**`Vantage.Api`** — HTTP. Controllers are deliberately thin: parse, call one
+**`Dashboard.Api`** — HTTP. Controllers are deliberately thin: parse, call one
 service, return. `Program.cs` is the composition root.
 
-**`Vantage.Demo`** — in-memory implementations of the same seven interfaces,
+**`Dashboard.Demo`** — in-memory implementations of the same seven interfaces,
 plus `DemoDataset` (the generated fixture). Referenced by Infrastructure too,
 so local dev seeding and the public demo share one fixture.
 
-**`Vantage.Wasm`** — a `[JSExport]` façade mirroring the API's endpoints, so
+**`Dashboard.Wasm`** — a `[JSExport]` façade mirroring the API's endpoints, so
 the browser can call the same services directly. Contains no logic; anything
 here would be logic the real API doesn't run.
 
@@ -110,12 +110,12 @@ here would be logic the real API doesn't run.
    the .NET runtime and calls `DemoApi.GetDashboard()` across JS interop. From
    step 5 onward, everything below is identical.*
 
-4. **`backend/src/Vantage.Api/Controllers/DashboardController.cs`**
+4. **`backend/src/Dashboard.Api/Controllers/DashboardController.cs`**
    Nine lines of body. Calls `_dashboardService.GetSummaryAsync(ct)` and wraps
    it in `Ok(...)`. No logic lives here — that's the point of it being this
    short.
 
-5. **`backend/src/Vantage.Application/Dashboard/DashboardService.cs`**
+5. **`backend/src/Dashboard.Application/Dashboard/DashboardService.cs`**
    The real work:
    - `ICategoryRepository.GetAllAsync()` → `EfCategoryRepository` → PostgreSQL.
    - `CategoryStatusCalculator.GetThresholdsAsync()` reads the three score
@@ -141,14 +141,14 @@ here would be logic the real API doesn't run.
 
 The important property: steps 5 and 6 are byte-identical whether the request
 arrived over HTTP or through WebAssembly interop, because
-`Vantage.Wasm/DemoJsonContext.cs` mirrors the API's serialization options
+`Dashboard.Wasm/DemoJsonContext.cs` mirrors the API's serialization options
 exactly.
 
 ---
 
 ## Where business logic lives
 
-In `Vantage.Domain` and `Vantage.Application`, and nowhere else.
+In `Dashboard.Domain` and `Dashboard.Application`, and nowhere else.
 
 - **Controllers** contain no logic. If one grows a branch, that branch belongs
   in a service.
@@ -228,7 +228,7 @@ Every environment difference is configuration, documented in `.env.example`.
 - **`VITE_` values are inlined into the bundle and are not secret.** No
   credential ever gets that prefix; `.env.example` says so at the top.
 - The one genuine secret is the PostgreSQL connection string, read from
-  `dotnet user-secrets` or `ConnectionStrings__Vantage`. It has no default and
+  `dotnet user-secrets` or `ConnectionStrings__Dashboard`. It has no default and
   the app fails with an explicit message if it's missing.
 - The deployed demo holds no secrets at all, because it talks to nothing.
 

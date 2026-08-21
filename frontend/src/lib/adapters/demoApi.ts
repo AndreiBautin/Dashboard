@@ -7,7 +7,7 @@ import type {
   MetricTrendPoint,
   SocialSummary,
 } from "@/lib/apiTypes";
-import type { VantageApi } from "@/lib/apiContract";
+import type { DashboardApi } from "@/lib/apiContract";
 
 /**
  * Runs the application's real .NET Application and Domain assemblies in the
@@ -63,8 +63,8 @@ async function loadRuntime(): Promise<DemoExports> {
   const { dotnet } = (await import(/* @vite-ignore */ url)) as {
     dotnet: {
       create(): Promise<{
-        // Exports are nested by namespace then type: Vantage → Wasm → DemoApi.
-        getAssemblyExports(name: string): Promise<{ Vantage: { Wasm: { DemoApi: DemoExports } } }>;
+        // Exports are nested by namespace then type: Dashboard → Wasm → DemoApi.
+        getAssemblyExports(name: string): Promise<{ Dashboard: { Wasm: { DemoApi: DemoExports } } }>;
         getConfig(): { mainAssemblyName: string };
       }>;
     };
@@ -72,7 +72,7 @@ async function loadRuntime(): Promise<DemoExports> {
 
   const { getAssemblyExports, getConfig } = await dotnet.create();
   const assembly = await getAssemblyExports(getConfig().mainAssemblyName);
-  const api = assembly.Vantage.Wasm.DemoApi;
+  const api = assembly.Dashboard.Wasm.DemoApi;
 
   const info = unwrap<{ categories: number; metrics: number; months: number; friends: number }>(api.Initialize());
   console.info(
@@ -119,7 +119,7 @@ async function write(call: (api: DemoExports) => string): Promise<void> {
   unwrap<null>(call(await exports()));
 }
 
-export const demoApi: VantageApi = {
+export const demoApi: DashboardApi = {
   fetchDashboardSummary: () => read<DashboardSummary>((api) => api.GetDashboard()),
 
   fetchMetricTrend: (metricDefinitionId) =>

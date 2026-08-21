@@ -10,7 +10,7 @@
       CI restores with the RestoreLockedMode property set to true.
 
       After changing any PackageReference, regenerate the lock files by
-      running `dotnet restore backend/Vantage.sln` with the ForceEvaluate
+      running `dotnet restore backend/Dashboard.sln` with the ForceEvaluate
       option (see docs/DEPLOYMENT.md for the exact command).
     -->
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>

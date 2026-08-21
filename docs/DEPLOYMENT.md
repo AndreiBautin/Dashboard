@@ -34,7 +34,7 @@ Pages, and then smoke-test the live URL.
 ### The consequence, stated plainly
 
 Pages cannot run ASP.NET Core, so **the deployed site is not running the API**.
-It runs the real `Vantage.Application` and `Vantage.Domain` assemblies compiled
+It runs the real `Dashboard.Application` and `Dashboard.Domain` assemblies compiled
 to WebAssembly, against in-memory repositories. Same logic, different
 persistence. See [ARCHITECTURE.md](ARCHITECTURE.md).
 
@@ -90,8 +90,8 @@ For a self-hosted deployment of the real API, migrations are EF Core and run
 automatically at startup **only under Development**:
 
 ```bash
-dotnet ef migrations add <Name> --project backend/src/Vantage.Infrastructure --startup-project backend/src/Vantage.Api
-dotnet ef database update --project backend/src/Vantage.Infrastructure --startup-project backend/src/Vantage.Api
+dotnet ef migrations add <Name> --project backend/src/Dashboard.Infrastructure --startup-project backend/src/Dashboard.Api
+dotnet ef database update --project backend/src/Dashboard.Infrastructure --startup-project backend/src/Dashboard.Api
 ```
 
 Automatic migration-on-startup is a local-development convenience. It should
@@ -204,7 +204,7 @@ Real failures encountered building this, with their actual fixes.
 | `dotnet publish` fails: `browser-wasm` not a valid RID | The `wasm-tools` workload is missing. | `dotnet workload install wasm-tools`. The deploy workflow does this explicitly; it is not preinstalled on the runner. |
 | Demo build fails on Windows with `EINVAL … spawnSync npm.cmd` | Node 20+ refuses to spawn a `.cmd` shim from `execFileSync` without a shell. | `build-demo.mjs` invokes `tsc` and `vite` through `process.execPath` instead of going via npm. |
 | `error MSB4024: An XML comment cannot contain '--'` | A comment in `Directory.Build.props` contained a double hyphen. | XML comments cannot contain `--`. Reword. |
-| CI fails `NU1004: ... ILLink.Tasks version has changed from [9.0.18, ) to [9.0.19, )` | Locked restore against a project whose packages are SDK-derived. `Microsoft.NET.ILLink.Tasks` tracks the installed runtime patch, so the lock records whichever machine last restored. | `Vantage.Wasm` sets `RestorePackagesWithLockFile=false`; the nine projects with real third-party dependencies keep locked restore. |
+| CI fails `NU1004: ... ILLink.Tasks version has changed from [9.0.18, ) to [9.0.19, )` | Locked restore against a project whose packages are SDK-derived. `Microsoft.NET.ILLink.Tasks` tracks the installed runtime patch, so the lock records whichever machine last restored. | `Dashboard.Wasm` sets `RestorePackagesWithLockFile=false`; the nine projects with real third-party dependencies keep locked restore. |
 | CI fails `NETSDK1147: workloads must be installed: wasm-tools-net9` | The workload id is SDK-version dependent, and the runner resolved a newer SDK than `global.json` intended. | Pin `dotnet-version` in `setup-dotnet`, and use `dotnet workload restore <csproj>` so the requirement is read from the project rather than hardcoded. |
 | Serialized properties missing only in the deployed build | Reflection-based `System.Text.Json` under a trimmed WASM publish. | `DemoJsonContext` is source-generated, so every type is a statically visible reference the trimmer keeps. |
 | Deep link returns HTTP 404 in a link checker, though the page renders | Pages serves `404.html` with a genuine 404 status. There is no rewrite rule. | Cosmetic; the app renders correctly because the router takes over. Accepted rather than switching to hash routing. |

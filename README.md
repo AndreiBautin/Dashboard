@@ -28,8 +28,8 @@ scoring rules in TypeScript for a browser-only demo — which means two
 implementations of the same 1,270 lines of logic, quietly drifting apart until
 the demo is lying about the app.
 
-Instead, the demo **compiles the real `Vantage.Application` and
-`Vantage.Domain` assemblies to WebAssembly** and runs them in the browser.
+Instead, the demo **compiles the real `Dashboard.Application` and
+`Dashboard.Domain` assemblies to WebAssembly** and runs them in the browser.
 Same `DashboardService`, same `MetricRatingCalculator`, same evaluators, same
 IL. The only thing swapped out is persistence: the seven repository interfaces
 are bound to in-memory implementations instead of the EF Core ones.
@@ -39,10 +39,10 @@ Local / self-hosted                   Deployed demo (GitHub Pages)
 ───────────────────                   ────────────────────────────
 React SPA                             React SPA   (same bundle, different adapter)
    │ HTTP/JSON                           │ direct call
-Vantage.Api (ASP.NET Core)            Vantage.Wasm   [JSExport] façade
+Dashboard.Api (ASP.NET Core)            Dashboard.Wasm   [JSExport] façade
    │                                     │
-Vantage.Application  ◄── same assemblies, same IL ──►  Vantage.Application
-Vantage.Domain                        Vantage.Domain
+Dashboard.Application  ◄── same assemblies, same IL ──►  Dashboard.Application
+Dashboard.Domain                        Dashboard.Domain
    │                                     │
 EF Core repositories                  In-memory repositories + generated fixture
    │                                     │
@@ -104,12 +104,12 @@ to end through real files.
 ## Architecture
 
 ```
-Vantage.Domain          entities, evaluation strategies, rating maths.  No dependencies.
-Vantage.Application     services, DTOs, repository interfaces.          Domain + DI abstractions.
-Vantage.Infrastructure  EF Core, Npgsql, repository implementations.    Application + Domain.
-Vantage.Api             controllers, composition root.                  All of the above.
-Vantage.Demo            in-memory repositories + the generated fixture. Application + Domain.
-Vantage.Wasm            [JSExport] façade for the browser.              Demo.
+Dashboard.Domain          entities, evaluation strategies, rating maths.  No dependencies.
+Dashboard.Application     services, DTOs, repository interfaces.          Domain + DI abstractions.
+Dashboard.Infrastructure  EF Core, Npgsql, repository implementations.    Application + Domain.
+Dashboard.Api             controllers, composition root.                  All of the above.
+Dashboard.Demo            in-memory repositories + the generated fixture. Application + Domain.
+Dashboard.Wasm            [JSExport] façade for the browser.              Demo.
 
 frontend/               React SPA. Two data adapters behind one contract.
 ```
@@ -142,7 +142,7 @@ and what is deliberately *not* tested and why:
 **[docs/TESTING.md](docs/TESTING.md)**.
 
 ```bash
-dotnet test backend/Vantage.sln
+dotnet test backend/Dashboard.sln
 ```
 
 ---
@@ -170,8 +170,8 @@ cd Dashboard
 Set the connection string (never committed — see `.env.example`):
 
 ```bash
-cd backend/src/Vantage.Api
-dotnet user-secrets set "ConnectionStrings:Vantage" "Host=localhost;Database=vantage_dev;Username=<user>;Password=<password>"
+cd backend/src/Dashboard.Api
+dotnet user-secrets set "ConnectionStrings:Dashboard" "Host=localhost;Database=vantage_dev;Username=<user>;Password=<password>"
 ```
 
 Then, on Windows, double-click **`start-app.bat`** — it checks prerequisites,
@@ -179,7 +179,7 @@ installs dependencies, applies migrations, starts both processes on pinned
 ports, and opens a browser. Otherwise:
 
 ```bash
-dotnet run --project backend/src/Vantage.Api
+dotnet run --project backend/src/Dashboard.Api
 ```
 
 ```bash

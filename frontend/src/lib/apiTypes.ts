@@ -2,7 +2,7 @@
  * The shape of every payload the app consumes.
  *
  * These types are the contract between the React app and *both* data
- * adapters. `Vantage.Api`'s controllers and `Vantage.Wasm`'s [JSExport]
+ * adapters. `Dashboard.Api`'s controllers and `Dashboard.Wasm`'s [JSExport]
  * façade serialize the same Application-layer records with the same naming
  * policy and the same string-enum handling, so one set of types describes
  * both. If the two ever diverge this file becomes a lie — which is exactly

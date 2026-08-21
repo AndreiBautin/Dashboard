@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Dashboard.Api</RootNamespace>
+    <UserSecretsId>vantage-api-local</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--
+      dotnet ef looks for Microsoft.EntityFrameworkCore.Design specifically on
+      the startup project. Dashboard.Infrastructure (where DashboardDbContext
+      actually lives) already references it, but with PrivateAssets="all", so
+      that reference doesn't flow through the ProjectReference below. Per
+      Microsoft's own docs for this "DbContext in a different project than the
+      startup project" setup, the fix is to add the same reference here too.
+    -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Dashboard.Application\Dashboard.Application.csproj" />
+    <ProjectReference Include="..\Dashboard.Infrastructure\Dashboard.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

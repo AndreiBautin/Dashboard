@@ -15,23 +15,23 @@ fixed. It is deliberately blunt in both directions.
 Four .NET projects plus a React SPA:
 
 ```
-Vantage.Domain          entities, evaluation strategies, rating maths.  No dependencies at all.
-Vantage.Application     services, DTOs, repository interfaces.          Depends on Domain + DI abstractions.
-Vantage.Infrastructure  EF Core, Npgsql, repository implementations.    Depends on Application + Domain.
-Vantage.Api             ASP.NET Core controllers, composition root.     Depends on everything.
+Dashboard.Domain          entities, evaluation strategies, rating maths.  No dependencies at all.
+Dashboard.Application     services, DTOs, repository interfaces.          Depends on Domain + DI abstractions.
+Dashboard.Infrastructure  EF Core, Npgsql, repository implementations.    Depends on Application + Domain.
+Dashboard.Api             ASP.NET Core controllers, composition root.     Depends on everything.
 
 frontend/               React 19 + Vite 8 + Tailwind 4 + React Router 7. Talks HTTP/JSON to the API.
 ```
 
 Storage is PostgreSQL via EF Core with four migrations. The connection string comes
-from `dotnet user-secrets` or `ConnectionStrings__Vantage`. There is no auth — it is
+from `dotnet user-secrets` or `ConnectionStrings__Dashboard`. There is no auth — it is
 a single-user app that has only ever run on `localhost`.
 
 ### Baseline, measured rather than assumed
 
 | Check | Result |
 | --- | --- |
-| `dotnet build Vantage.sln -c Release` | succeeds, **0 warnings** |
+| `dotnet build Dashboard.sln -c Release` | succeeds, **0 warnings** |
 | Backend tests, working tree as found | **211 total — 203 pass, 8 fail** |
 | Backend tests, uncommitted change stashed | **211 total — 210 pass, 1 fail** |
 | `npm run build` | succeeds; one 578 kB chunk-size warning |
@@ -55,8 +55,8 @@ Two distinct problems hide in that test column, and separating them matters:
 This is not a codebase that needs rescuing, and it would be dishonest to invent
 problems in order to justify restructuring it.
 
-- **The layering is real, not decorative.** `Vantage.Domain` genuinely has zero
-  package references. `Vantage.Application` depends only on
+- **The layering is real, not decorative.** `Dashboard.Domain` genuinely has zero
+  package references. `Dashboard.Application` depends only on
   `Microsoft.Extensions.DependencyInjection.Abstractions` and Domain. EF Core appears
   in exactly one project. That discipline is rarer than it sounds, and it is what
   makes the deployment strategy in section 6 possible at all.
@@ -190,7 +190,7 @@ Three options were considered:
 | Reimplement the scoring engine in TypeScript for a browser-only demo | **Rejected.** 1,270 lines of real logic would become a second implementation that silently drifts from the first. A demo that disagrees with the app is worse than no demo. |
 | **Compile the real Application and Domain assemblies to WebAssembly** | **Chosen.** |
 
-Why the chosen option is available at all: because `Vantage.Application` depends on
+Why the chosen option is available at all: because `Dashboard.Application` depends on
 nothing but DI abstractions, and because persistence already sits behind seven small
 interfaces, the *actual* scoring engine can run in the browser with in-memory
 repositories substituted for the EF Core ones. **There is no second implementation.**
@@ -202,10 +202,10 @@ Local / real                          Deployed demo (GitHub Pages)
 ────────────                          ────────────────────────────
 React SPA                             React SPA   (same bundle, different adapter)
    │ HTTP/JSON                           │ direct call
-Vantage.Api (ASP.NET)                 Vantage.Wasm   [JSExport] façade
+Dashboard.Api (ASP.NET)                 Dashboard.Wasm   [JSExport] façade
    │                                     │
-Vantage.Application  ◄── same assemblies, same IL ──►  Vantage.Application
-Vantage.Domain                        Vantage.Domain
+Dashboard.Application  ◄── same assemblies, same IL ──►  Dashboard.Application
+Dashboard.Domain                        Dashboard.Domain
    │                                     │
 EF Core repositories                  In-memory repositories + generated fixture
    │                                     │
@@ -213,7 +213,7 @@ PostgreSQL                            browser memory
 ```
 
 Verified before committing to it: a `browser-wasm` build referencing
-`Vantage.Application` compiles clean and executes in a real browser, returning
+`Dashboard.Application` compiles clean and executes in a real browser, returning
 `.NET 9.0.19` from a `[JSExport]` method with both Dashboard assemblies loaded.
 
 Cost: **$0**, no new account, no new secret — Pages authenticates with the workflow's
@@ -243,8 +243,8 @@ demo and both are stated plainly in the README.
 1. Replace the real personal data with a generated fixture; add a test that scans for it.
 2. Understand and fix the pre-existing failing test.
 3. Update the tests the uncommitted retune invalidates, preserving the retune.
-4. Extract the demo dataset and in-memory repositories into `Vantage.Demo`.
-5. Build the `Vantage.Wasm` façade over the real Application services.
+4. Extract the demo dataset and in-memory repositories into `Dashboard.Demo`.
+5. Build the `Dashboard.Wasm` façade over the real Application services.
 6. Add the frontend data-source seam, keeping the HTTP adapter as the default.
 7. Config hardening: `.env.example`, `.gitattributes`, total config parsing, base path.
 8. CI: build, test, lint, dependency audit, secret scan over full history.

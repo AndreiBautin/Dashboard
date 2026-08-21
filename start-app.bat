@@ -59,7 +59,7 @@ if not exist "%FRONTEND_DIR%\node_modules" (
 
 rem --- launch ----------------------------------------------------
 echo [start] API      -^> http://localhost:%BACKEND_PORT%
-start "Dashboard API" cmd /k "cd /d "%BACKEND_DIR%" && dotnet run --project src\Vantage.Api -- --urls http://localhost:%BACKEND_PORT%"
+start "Dashboard API" cmd /k "cd /d "%BACKEND_DIR%" && dotnet run --project src\Dashboard.Api -- --urls http://localhost:%BACKEND_PORT%"
 
 echo [start] Frontend -^> %APP_URL%
 start "Dashboard Frontend" cmd /k "cd /d "%FRONTEND_DIR%" && npm run dev"

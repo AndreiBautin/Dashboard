@@ -24,8 +24,8 @@ function Test-CommandExists($name) {
 
 $repoRoot = $PSScriptRoot
 $backendDir = Join-Path $repoRoot "backend"
-$apiDir = Join-Path $backendDir "src\Vantage.Api"
-$infrastructureDir = Join-Path $backendDir "src\Vantage.Infrastructure"
+$apiDir = Join-Path $backendDir "src\Dashboard.Api"
+$infrastructureDir = Join-Path $backendDir "src\Dashboard.Infrastructure"
 $frontendDir = Join-Path $repoRoot "frontend"
 
 # --- Prerequisite checks -----------------------------------------------------
@@ -76,7 +76,7 @@ if ($dbExists) {
 Write-Step "Storing the connection string via dotnet user-secrets"
 
 Push-Location $apiDir
-dotnet user-secrets set "ConnectionStrings:Vantage" $connectionString
+dotnet user-secrets set "ConnectionStrings:Dashboard" $connectionString
 Pop-Location
 
 # --- Restore and build --------------------------------------------------------
@@ -106,7 +106,7 @@ if (Test-Path $migrationsDir) {
     Write-Host "A migration already exists in $migrationsDir, skipping 'migrations add'."
 } else {
     Push-Location $backendDir
-    dotnet ef migrations add InitialCreate --project src/Vantage.Infrastructure --startup-project src/Vantage.Api
+    dotnet ef migrations add InitialCreate --project src/Dashboard.Infrastructure --startup-project src/Dashboard.Api
     Pop-Location
     Write-Host "Migration created."
 }
@@ -114,7 +114,7 @@ if (Test-Path $migrationsDir) {
 Write-Step "Applying the migration to the database"
 
 Push-Location $backendDir
-dotnet ef database update --project src/Vantage.Infrastructure --startup-project src/Vantage.Api
+dotnet ef database update --project src/Dashboard.Infrastructure --startup-project src/Dashboard.Api
 Pop-Location
 
 # --- Frontend dependencies -----------------------------------------------------
@@ -134,7 +134,7 @@ Write-Host @"
 Everything is set up. To run Dashboard:
 
   Terminal 1 (backend):
-    dotnet run --project backend/src/Vantage.Api
+    dotnet run --project backend/src/Dashboard.Api
 
   Terminal 2 (frontend):
     cd frontend

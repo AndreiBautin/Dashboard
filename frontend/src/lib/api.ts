@@ -1,7 +1,7 @@
 import { config } from "@/lib/config";
 import { httpApi } from "@/lib/adapters/httpApi";
 import { demoApi } from "@/lib/adapters/demoApi";
-import type { VantageApi } from "@/lib/apiContract";
+import type { DashboardApi } from "@/lib/apiContract";
 
 /**
  * The app's single data-access module. Every feature imports from here and
@@ -9,7 +9,7 @@ import type { VantageApi } from "@/lib/apiContract";
  *
  * Two adapters implement the same contract:
  *
- * - `httpApi` — the real application. Talks to `Vantage.Api` over HTTP/JSON,
+ * - `httpApi` — the real application. Talks to `Dashboard.Api` over HTTP/JSON,
  *   backed by PostgreSQL. The default, and what runs in local development.
  * - `demoApi` — the public demo. Runs the same .NET Application and Domain
  *   assemblies in the browser via WebAssembly, backed by in-memory
@@ -20,7 +20,7 @@ import type { VantageApi } from "@/lib/apiContract";
  * one line in the codebase that decides which backend a build talks to.
  */
 
-const backend: VantageApi = config.dataSource === "demo" ? demoApi : httpApi;
+const backend: DashboardApi = config.dataSource === "demo" ? demoApi : httpApi;
 
 // Re-exported so `import type { DashboardSummary } from "@/lib/api"` keeps
 // working exactly as it did before the adapters were split out.

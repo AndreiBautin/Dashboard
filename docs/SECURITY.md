@@ -146,7 +146,7 @@ SQLitePCLRaw has not yet published a build carrying it. Upgrading
 to 2.1.10.
 
 Impact assessment: it is a **test-only** transitive dependency, reached only
-through `Vantage.Api.Tests`'s in-memory SQLite database. It ships in nothing —
+through `Dashboard.Api.Tests`'s in-memory SQLite database. It ships in nothing —
 not the API, not the WebAssembly bundle, not the deployed site. The
 vulnerability requires processing hostile SQL or database content; the only
 input it ever sees is written by the test suite in this repository.
@@ -197,7 +197,7 @@ not need. The platform's own logs are enough.
 
 - One real secret exists: the PostgreSQL connection string.
 - Development: `dotnet user-secrets`, stored outside the repository.
-- Hosted: the `ConnectionStrings__Vantage` environment variable.
+- Hosted: the `ConnectionStrings__Dashboard` environment variable.
 - No default, and startup fails with an explicit message if it is missing —
   rather than silently falling back to something that half-works.
 - `.gitignore` covers `.env`, `.env.local`, and `appsettings.*.local.json`.

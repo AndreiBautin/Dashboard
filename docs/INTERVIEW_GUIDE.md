@@ -31,7 +31,7 @@ Stop there. That's the hook, and it invites the follow-up you want.
 **Lead with these three, in this order:**
 
 1. **"Dependencies point inward, and Domain has zero of them."** Not "I used
-   Clean Architecture" — say the concrete fact. `Vantage.Domain` references no
+   Clean Architecture" — say the concrete fact. `Dashboard.Domain` references no
    project and no NuGet package.
 2. **"Persistence is seven interfaces on the Application layer."** No service
    touches a `DbContext`.
@@ -44,12 +44,12 @@ Stop there. That's the hook, and it invites the follow-up you want.
 Then the shape:
 
 ```
-Vantage.Domain          entities, evaluators, rating maths.    No dependencies.
-Vantage.Application     services, DTOs, repository interfaces.  Domain only.
-Vantage.Infrastructure  EF Core, Npgsql, implementations.
-Vantage.Api             controllers, composition root.
-Vantage.Demo            in-memory repositories + fixture.
-Vantage.Wasm            [JSExport] façade for the browser.
+Dashboard.Domain          entities, evaluators, rating maths.    No dependencies.
+Dashboard.Application     services, DTOs, repository interfaces.  Domain only.
+Dashboard.Infrastructure  EF Core, Npgsql, implementations.
+Dashboard.Api             controllers, composition root.
+Dashboard.Demo            in-memory repositories + fixture.
+Dashboard.Wasm            [JSExport] façade for the browser.
 ```
 
 If they push on "isn't four projects a lot for this?" — see the

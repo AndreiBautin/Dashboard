@@ -16,7 +16,7 @@ import type {
  * here rather than at runtime on the deployed page — which is the only place
  * that particular mistake would otherwise show up.
  */
-export interface VantageApi {
+export interface DashboardApi {
   fetchDashboardSummary(): Promise<DashboardSummary>;
 
   fetchMetricTrend(metricDefinitionId: number): Promise<MetricTrendPoint[]>;

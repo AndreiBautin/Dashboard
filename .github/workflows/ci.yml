@@ -31,7 +31,7 @@ jobs:
           dotnet-version: "9.0.x"
           global-json-file: backend/global.json
 
-      # The solution includes Vantage.Wasm, so even a plain restore of the
+      # The solution includes Dashboard.Wasm, so even a plain restore of the
       # solution needs the WebAssembly workload present.
       #
       # `workload restore` rather than `workload install wasm-tools`: the
@@ -40,25 +40,25 @@ jobs:
       # the project instead of hardcoding a name that is right on one machine
       # and wrong on another.
       - name: Install the WebAssembly workload
-        run: dotnet workload restore backend/src/Vantage.Wasm/Vantage.Wasm.csproj
+        run: dotnet workload restore backend/src/Dashboard.Wasm/Dashboard.Wasm.csproj
 
       # Locked mode: fail if a resolved package version differs from what
       # packages.lock.json records, rather than quietly building against
       # something other than what was tested. The .NET counterpart of `npm ci`.
       - name: Restore (locked)
-        run: dotnet restore backend/Vantage.sln -p:RestoreLockedMode=true
+        run: dotnet restore backend/Dashboard.sln -p:RestoreLockedMode=true
 
       - name: Build
-        run: dotnet build backend/Vantage.sln -c Release --no-restore
+        run: dotnet build backend/Dashboard.sln -c Release --no-restore
 
       - name: Test
-        run: dotnet test backend/Vantage.sln -c Release --no-build --logger "console;verbosity=normal"
+        run: dotnet test backend/Dashboard.sln -c Release --no-build --logger "console;verbosity=normal"
 
       # Warnings are not errors in this repository's day-to-day build, but the
       # baseline is genuinely zero, so a new one is worth surfacing.
       - name: Fail on new build warnings
         run: |
-          dotnet build backend/Vantage.sln -c Release --no-restore -warnaserror
+          dotnet build backend/Dashboard.sln -c Release --no-restore -warnaserror
 
   frontend:
     name: Frontend — build, lint & test
@@ -118,7 +118,7 @@ jobs:
       # reads the requirement from the project itself instead of hardcoding
       # a name that is right on one machine and wrong on another.
       - name: Install the WebAssembly workload
-        run: dotnet workload restore backend/src/Vantage.Wasm/Vantage.Wasm.csproj
+        run: dotnet workload restore backend/src/Dashboard.Wasm/Dashboard.Wasm.csproj
 
       - name: Install (frozen lockfile)
         run: npm ci
@@ -178,14 +178,14 @@ jobs:
         working-directory: frontend
 
       - name: Install the WebAssembly workload
-        run: dotnet workload restore backend/src/Vantage.Wasm/Vantage.Wasm.csproj
+        run: dotnet workload restore backend/src/Dashboard.Wasm/Dashboard.Wasm.csproj
 
       - name: Restore (locked)
-        run: dotnet restore backend/Vantage.sln -p:RestoreLockedMode=true
+        run: dotnet restore backend/Dashboard.sln -p:RestoreLockedMode=true
 
       - name: NuGet vulnerability audit
         run: |
-          dotnet list backend/Vantage.sln package --vulnerable --include-transitive 2>&1 | tee audit.txt
+          dotnet list backend/Dashboard.sln package --vulnerable --include-transitive 2>&1 | tee audit.txt
 
           # One advisory is accepted, by name, with a written justification in
           # docs/SECURITY.md. It is NOT a lowered gate: every other high or

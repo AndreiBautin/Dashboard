@@ -3,7 +3,7 @@
 **278 tests.** 241 backend (xUnit), 37 frontend (Vitest).
 
 ```bash
-dotnet test backend/Vantage.sln     # 241
+dotnet test backend/Dashboard.sln     # 241
 cd frontend && npm test             # 37
 ```
 
@@ -48,7 +48,7 @@ reasoning written into it.
 ### Domain (119 tests)
 
 Pure functions and invariants, tested with no infrastructure at all — which is
-possible because `Vantage.Domain` has zero dependencies.
+possible because `Dashboard.Domain` has zero dependencies.
 
 Each of the five evaluators gets its own file covering improvement, regression,
 stagnation, and insufficient history. `MetricRatingCalculatorTests` covers the
@@ -142,7 +142,7 @@ This section is the honest half.
   write round-trip — and the deploy smoke test checks the live site on every
   push. What is missing is a *regression* net for UI behaviour, and that is a
   real gap rather than a solved problem.
-- **No tests for `Vantage.Wasm`.** It is a thin interop façade with no logic;
+- **No tests for `Dashboard.Wasm`.** It is a thin interop façade with no logic;
   everything it calls is covered by `DemoWorkspaceTests`. The part that could
   genuinely break — trimming removing a serializer — cannot be caught by a unit
   test on the host platform. The deploy smoke test covers it instead, by
@@ -169,7 +169,7 @@ This section is the honest half.
 | `Metrics/Fakes/*`, `Social/Fakes/*` | Hand-written in-memory repositories with a `Seed(...)` method. Shorter than mock setup, and readable as data. |
 | `SqliteWebApplicationFactory` | `WebApplicationFactory` over a shared in-memory SQLite connection, with `InitializeDatabaseAsync(...)` for per-class seeding. |
 | `CustomWebApplicationFactory` | For tests that must not touch a database at all — supplies a placeholder connection string so DI resolves without connecting. |
-| `DemoStore` internals | Exposed to `Vantage.Demo.Tests` via `InternalsVisibleTo`, so seeding-safety tests can insert a record directly and prove seeding refuses to touch it. |
+| `DemoStore` internals | Exposed to `Dashboard.Demo.Tests` via `InternalsVisibleTo`, so seeding-safety tests can insert a record directly and prove seeding refuses to touch it. |
 | `DemoSeederTests.Snapshot(store)` | Renders the whole store as a stable comparable string, so "nothing changed" assertions cover everything rather than the one collection the author remembered. |
 
 ---

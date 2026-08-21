@@ -10,7 +10,7 @@ structural rather than a matter of being careful.
 
 ### 1. Generate, never capture
 
-`backend/src/Vantage.Demo/DemoDataset.cs` is a hand-written fixture describing
+`backend/src/Dashboard.Demo/DemoDataset.cs` is a hand-written fixture describing
 a fictional person. Every number in it was invented for the purpose.
 
 The property that matters is what *doesn't* exist: there is no export step, no
@@ -156,7 +156,7 @@ exists. A page refresh has the same effect, since nothing persists.
 
 ```bash
 dropdb vantage_dev && createdb vantage_dev
-dotnet run --project backend/src/Vantage.Api
+dotnet run --project backend/src/Dashboard.Api
 ```
 
 There is deliberately no "reset" endpoint on the real API. Resetting someone's
@@ -178,7 +178,7 @@ experience than being told plainly that none are needed.
 
 ## The tests that enforce this
 
-In `backend/tests/Vantage.Demo.Tests/`:
+In `backend/tests/Dashboard.Demo.Tests/`:
 
 | Test | What it guarantees |
 | --- | --- |

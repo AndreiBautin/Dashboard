@@ -44,7 +44,7 @@ jobs:
 
       # See ci.yml for why this is `restore` and not `install wasm-tools`.
       - name: Install the WebAssembly workload
-        run: dotnet workload restore backend/src/Vantage.Wasm/Vantage.Wasm.csproj
+        run: dotnet workload restore backend/src/Dashboard.Wasm/Dashboard.Wasm.csproj
 
       - name: Install (frozen lockfile)
         run: npm ci
