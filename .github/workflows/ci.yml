@@ -186,13 +186,34 @@ jobs:
       - name: NuGet vulnerability audit
         run: |
           dotnet list backend/Vantage.sln package --vulnerable --include-transitive 2>&1 | tee audit.txt
-          # `dotnet list package` exits 0 even when it finds something, so the
-          # output has to be inspected rather than the exit code trusted.
-          if grep -qiE '(High|Critical)' audit.txt; then
-            echo "::error::High or critical severity NuGet vulnerabilities found."
+
+          # One advisory is accepted, by name, with a written justification in
+          # docs/SECURITY.md. It is NOT a lowered gate: every other high or
+          # critical finding still fails this job, and this exception is a
+          # single greppable line that a reviewer can see and challenge.
+          #
+          # GHSA-2m69-gcr7-jv3q — SQLitePCLRaw.lib.e_sqlite3 (CVE-2025-6965).
+          # There is no patched version: the fix lives in SQLite itself
+          # (>= 3.50.2) and SQLitePCLRaw has not yet shipped a build carrying
+          # it, so this cannot be resolved by upgrading. The package is a
+          # test-only transitive dependency of Microsoft.EntityFrameworkCore.Sqlite
+          # and is never shipped — not in the API, not in the WebAssembly
+          # bundle. Re-check when SQLitePCLRaw publishes a patched release.
+          ACCEPTED='GHSA-2m69-gcr7-jv3q'
+
+          if grep -iE '(High|Critical)' audit.txt | grep -qv "$ACCEPTED"; then
+            echo "::error::High or critical severity NuGet vulnerabilities found (excluding the documented exception)."
+            grep -iE '(High|Critical)' audit.txt | grep -v "$ACCEPTED"
             exit 1
           fi
-          echo "No high or critical NuGet vulnerabilities."
+
+          if grep -q "$ACCEPTED" audit.txt; then
+            echo "::warning::The accepted advisory $ACCEPTED is still present. Re-check whether a patched SQLitePCLRaw has shipped."
+          else
+            echo "::notice::$ACCEPTED no longer appears — remove the exception from ci.yml and docs/SECURITY.md."
+          fi
+
+          echo "No unaccepted high or critical NuGet vulnerabilities."
 
       - name: Secret scan (full history)
         uses: gitleaks/gitleaks-action@v2

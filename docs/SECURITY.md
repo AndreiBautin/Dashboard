@@ -99,6 +99,39 @@ EF Core with LINQ throughout; no raw SQL, no string-concatenated queries, no
 dynamic SQL anywhere in the repository. React escapes rendered text by
 default, and the app never uses `dangerouslySetInnerHTML`.
 
+### S6 — Dependency advisories · **High** · Fixed, except one that has no fix
+
+The audit gates found real advisories on first run, and they were fixed by
+upgrading rather than by relaxing the gate:
+
+| Package | Advisory | Action |
+| --- | --- | --- |
+| `react-router` / `react-router-dom` 7.18.1 | RSC-mode CSRF bypass (high) | Upgraded to 7.18.2. This one is a direct dependency the app genuinely uses. |
+| `undici` 7.28.0 | Five advisories (high) | Upgraded to 7.29.0 |
+| `postcss` | Source-map read (moderate) | Upgraded to 8.5.26 |
+| `nanoid` | Infinite loop on zero size (high) | Upgraded to 3.3.18 |
+
+`npm audit` now reports zero vulnerabilities.
+
+**The exception, stated plainly.** `SQLitePCLRaw.lib.e_sqlite3` 2.1.10 carries
+[GHSA-2m69-gcr7-jv3q](https://github.com/advisories/GHSA-2m69-gcr7-jv3q)
+(CVE-2025-6965), rated High. **There is no patched version to upgrade to** —
+the advisory lists none, because the fix is in SQLite itself (≥ 3.50.2) and
+SQLitePCLRaw has not yet published a build carrying it. Upgrading
+`Microsoft.EntityFrameworkCore.Sqlite` to 9.0.11 was tried and still resolves
+to 2.1.10.
+
+Impact assessment: it is a **test-only** transitive dependency, reached only
+through `Vantage.Api.Tests`'s in-memory SQLite database. It ships in nothing —
+not the API, not the WebAssembly bundle, not the deployed site. The
+vulnerability requires processing hostile SQL or database content; the only
+input it ever sees is written by the test suite in this repository.
+
+It is therefore accepted **by name**, in one greppable line in `ci.yml`, with
+this justification. Every other high or critical NuGet finding still fails the
+build, and CI emits a notice if the advisory ever stops appearing, so the
+exception gets removed rather than quietly outliving its reason.
+
 ### S5 — Credentials in git history · **None found** · Verified
 
 The full history of all eleven original commits was scanned for connection
@@ -213,6 +246,9 @@ Stated plainly rather than closed off:
    loaded from a remote source, that assumption would have to change.
 5. **`AllowedHosts: "*"`** ships in the committed `appsettings.json`. Harmless
    for local use; would need narrowing before hosting the API.
-6. **Dependency risk is real and ongoing.** The audit gate catches known
+6. **One accepted high-severity advisory** in a test-only dependency with no
+   patched version available — see S6. It ships in nothing, but it is a real
+   finding being carried rather than closed.
+7. **Dependency risk is real and ongoing.** The audit gate catches known
    high-severity advisories at build time. It cannot catch an advisory
    published after the last build, and nothing here runs on a schedule.
