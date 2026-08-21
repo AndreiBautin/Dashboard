@@ -22,12 +22,6 @@ Thumbs.db
 .env
 .env.local
 
-# Orphaned scaffolding artifacts (unused by any code; left over from the dev
-# environment that generated Phase 1 and could not be deleted there)
-/.install1.log
-frontend/src/App.css
-frontend/src/assets/
-
 # Demo build artifacts: the .NET WebAssembly runtime is published into
 # public/ by scripts/build-demo.mjs, never committed.
 frontend/public/dashboard-wasm/
