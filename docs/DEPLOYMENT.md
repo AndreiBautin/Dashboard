@@ -1,6 +1,6 @@
 # Deployment
 
-**Live:** <https://andreibautin.github.io/vantage/>
+**Live:** <https://andreibautin.github.io/Dashboard/>
 
 Pushes to `main` build the WebAssembly runtime and the SPA, publish to GitHub
 Pages, and then smoke-test the live URL.
@@ -120,7 +120,7 @@ push to main
    │
    └── deploy.yml ─────────── install wasm-tools
                               npm ci
-                              npm run build:demo   (VITE_BASE_PATH=/vantage/)
+                              npm run build:demo   (VITE_BASE_PATH=/Dashboard/)
                               upload-pages-artifact
                               deploy-pages
                               smoke test ─ the live URL, the runtime, a deep link
@@ -178,16 +178,16 @@ npx serve dist
 
 For the project-page layout, set the base path — and note that **Git Bash on
 Windows rewrites a leading-slash value into a Windows path**, which produces
-asset URLs like `/C:/Program Files/Git/vantage/...`. Disable that conversion:
+asset URLs like `/C:/Program Files/Git/Dashboard/...`. Disable that conversion:
 
 ```bash
-MSYS_NO_PATHCONV=1 VITE_BASE_PATH=/vantage/ npm run build:demo
+MSYS_NO_PATHCONV=1 VITE_BASE_PATH=/Dashboard/ npm run build:demo
 ```
 
 PowerShell and Linux need no such workaround.
 
 To reproduce the deployed layout exactly, serve a parent directory containing
-`vantage/` rather than serving `dist` directly — otherwise the base path and
+`Dashboard/` rather than serving `dist` directly — otherwise the base path and
 the served path disagree.
 
 ---

@@ -1,7 +1,7 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    One-time local setup for Vantage: creates the Postgres database, stores
+    One-time local setup for Dashboard: creates the Postgres database, stores
     the connection string as a user secret, restores/builds the backend,
     generates and applies the EF Core migration, and installs frontend
     dependencies.
@@ -131,7 +131,7 @@ Write-Step "Setup complete"
 
 Write-Host @"
 
-Everything is set up. To run Vantage:
+Everything is set up. To run Dashboard:
 
   Terminal 1 (backend):
     dotnet run --project backend/src/Vantage.Api

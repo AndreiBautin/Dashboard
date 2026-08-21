@@ -187,7 +187,7 @@ configuration. An eager read would throw before those overrides ever applied.
 
 ## Auth
 
-There isn't any. Vantage is a single-user application that has only ever bound
+There isn't any. Dashboard is a single-user application that has only ever bound
 to `localhost`, and the deployed demo is a static bundle with no server and no
 per-user data.
 

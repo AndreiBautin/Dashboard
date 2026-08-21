@@ -1,9 +1,9 @@
 @echo off
 setlocal EnableDelayedExpansion
-title Vantage - Launcher
+title Dashboard - Launcher
 
 rem ---------------------------------------------------------------
-rem  Starts the Vantage API and the frontend dev server, waits for
+rem  Starts the Dashboard API and the frontend dev server, waits for
 rem  both to answer, then opens the app in the default browser.
 rem  Each server runs in its own window; closing that window stops it.
 rem
@@ -19,7 +19,7 @@ set "FRONTEND_PORT=5180"
 set "APP_URL=http://localhost:%FRONTEND_PORT%"
 
 echo.
-echo === Vantage ===
+echo === Dashboard ===
 echo.
 
 rem --- prerequisites ---------------------------------------------
@@ -59,10 +59,10 @@ if not exist "%FRONTEND_DIR%\node_modules" (
 
 rem --- launch ----------------------------------------------------
 echo [start] API      -^> http://localhost:%BACKEND_PORT%
-start "Vantage API" cmd /k "cd /d "%BACKEND_DIR%" && dotnet run --project src\Vantage.Api -- --urls http://localhost:%BACKEND_PORT%"
+start "Dashboard API" cmd /k "cd /d "%BACKEND_DIR%" && dotnet run --project src\Vantage.Api -- --urls http://localhost:%BACKEND_PORT%"
 
 echo [start] Frontend -^> %APP_URL%
-start "Vantage Frontend" cmd /k "cd /d "%FRONTEND_DIR%" && npm run dev"
+start "Dashboard Frontend" cmd /k "cd /d "%FRONTEND_DIR%" && npm run dev"
 
 call :wait_for_port %BACKEND_PORT% "API" 90 || goto :fail
 call :wait_for_port %FRONTEND_PORT% "frontend" 60 || goto :fail

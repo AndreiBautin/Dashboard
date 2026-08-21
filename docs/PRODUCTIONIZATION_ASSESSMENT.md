@@ -1,7 +1,7 @@
 # Productionization Assessment
 
 **Date:** 2026-08-20
-**Repository:** Vantage — a personal monthly life-metrics dashboard
+**Repository:** Dashboard — a personal monthly life-metrics dashboard
 **Assessed at commit:** `2dd0709`, plus uncommitted work on `KnownAppSettings.cs`
 
 This is an honest review of what the application is today, what stands between it
@@ -214,7 +214,7 @@ PostgreSQL                            browser memory
 
 Verified before committing to it: a `browser-wasm` build referencing
 `Vantage.Application` compiles clean and executes in a real browser, returning
-`.NET 9.0.19` from a `[JSExport]` method with both Vantage assemblies loaded.
+`.NET 9.0.19` from a `[JSExport]` method with both Dashboard assemblies loaded.
 
 Cost: **$0**, no new account, no new secret — Pages authenticates with the workflow's
 built-in token. Trade-off: a larger first-load payload than a plain SPA, and the demo

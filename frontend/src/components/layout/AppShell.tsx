@@ -16,7 +16,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen">
       <aside className="w-56 shrink-0 border-r border-border px-4 py-6">
         <div className="mb-8 px-2">
-          <p className="text-lg font-semibold tracking-tight">Vantage</p>
+          <p className="text-lg font-semibold tracking-tight">Dashboard</p>
           <p className="text-xs text-muted">Monthly Executive Review</p>
         </div>
         <nav className="flex flex-col gap-1">

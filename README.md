@@ -1,14 +1,14 @@
-# Vantage
+# Dashboard
 
 A monthly review dashboard for the parts of life that don't send you a report.
 
 Once a month you sit down for ten minutes and answer one question honestly:
-*am I actually progressing in the areas I care about?* Vantage makes that
+*am I actually progressing in the areas I care about?* Dashboard makes that
 answerable at a glance — you enter a handful of numbers, and it tells you what
 improved, what stalled, and what needs attention. It is deliberately **not** a
 daily-use app: no streaks, no notifications, no guilt mechanics.
 
-**[▶ Open the live demo](https://andreibautin.github.io/vantage/)**
+**[▶ Open the live demo](https://andreibautin.github.io/Dashboard/)**
 
 No login, no sign-up — the demo opens straight onto a populated dashboard.
 It's seeded with a generated fixture for a fictional person; none of it is
@@ -22,7 +22,7 @@ Changes live in browser memory only, so a refresh restores the fixture.
 
 This is the part worth two minutes of an interviewer's time.
 
-Vantage is an ASP.NET Core API over PostgreSQL. GitHub Pages serves static
+Dashboard is an ASP.NET Core API over PostgreSQL. GitHub Pages serves static
 files and cannot run any of that. The usual answer is to reimplement the
 scoring rules in TypeScript for a browser-only demo — which means two
 implementations of the same 1,270 lines of logic, quietly drifting apart until
@@ -163,8 +163,8 @@ The full app, against a real PostgreSQL database.
 **Prerequisites:** .NET 9 SDK, Node 24+, PostgreSQL.
 
 ```bash
-git clone https://github.com/AndreiBautin/vantage.git
-cd vantage
+git clone https://github.com/AndreiBautin/Dashboard.git
+cd Dashboard
 ```
 
 Set the connection string (never committed — see `.env.example`):

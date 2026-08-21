@@ -8,7 +8,7 @@ file", not an elaboration.
 
 ## The 30-second version
 
-> Vantage is a monthly review dashboard for the parts of life that don't send
+> Dashboard is a monthly review dashboard for the parts of life that don't send
 > you a report — fitness, finances, and how much you're actually seeing your
 > friends. You enter a handful of numbers once a month and it tells you what
 > improved, what stalled, and what needs attention.

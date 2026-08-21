@@ -132,5 +132,5 @@ export const config: AppConfig = buildConfig(import.meta.env as unknown as Recor
 // Surfaced once at startup rather than swallowed. A misconfigured deployment
 // should be visible to whoever opens the console, not silently wrong.
 for (const warning of config.warnings) {
-  console.warn(`[vantage config] ${warning}`);
+  console.warn(`[dashboard config] ${warning}`);
 }

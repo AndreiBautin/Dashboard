@@ -6,7 +6,11 @@ describe("App shell", () => {
   it("renders the nav and the dashboard page by default", () => {
     render(<App />);
 
-    expect(screen.getByText("Vantage")).toBeInTheDocument();
+    // "Dashboard" is both the app's name in the header and the label of the
+    // first nav item, so this has to say which one it means. The brand is the
+    // one that isn't a link.
+    expect(screen.getByText("Dashboard", { selector: "p" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /dashboard/i })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Monthly Executive Review" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /fitness/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /finance/i })).toBeInTheDocument();

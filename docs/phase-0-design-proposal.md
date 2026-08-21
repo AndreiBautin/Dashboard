@@ -1,5 +1,12 @@
 # Vantage — Phase 0 Design Proposal
 
+> **Historical document, kept as written.** The product was later renamed from
+> **Vantage** to **Dashboard**. The .NET namespaces and project names still use
+> `Vantage.*`, so this document remains accurate about the code; only the
+> product name changed. Nothing below has been edited after the fact — the
+> point of keeping it is that it records what was decided, and what was
+> rejected, before any of it was built.
+
 Prepared as a design review document. No code has been written. This document exists to align on product direction, architecture, and scope before Phase 1 begins.
 
 ---

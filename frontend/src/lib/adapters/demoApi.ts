@@ -76,7 +76,7 @@ async function loadRuntime(): Promise<DemoExports> {
 
   const info = unwrap<{ categories: number; metrics: number; months: number; friends: number }>(api.Initialize());
   console.info(
-    `[vantage] demo runtime ready — ${info.categories} categories, ${info.metrics} metrics, ` +
+    `[dashboard] demo runtime ready — ${info.categories} categories, ${info.metrics} metrics, ` +
       `${info.months} months, ${info.friends} friends`,
   );
 

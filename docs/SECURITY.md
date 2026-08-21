@@ -4,7 +4,7 @@
 
 Most of this document is short because of what follows, so it comes first.
 
-**What Vantage is:** a single-user, single-tenant application with no
+**What Dashboard is:** a single-user, single-tenant application with no
 authentication, no accounts, no multi-user data, no file uploads, no
 user-generated HTML, no outbound integrations, and no payment data. The only
 personal information in it is what the owner types about themselves. Run
@@ -75,9 +75,11 @@ public.
    figure above. Making that repository public would have exposed them to
    anyone who knew or recorded the SHA.
 
-   So the clean commit was pushed to a **new** repository instead
-   (`AndreiBautin/vantage`), which has never contained the data in any commit,
-   reachable or otherwise. The original repository stays private.
+   So the clean commit was pushed to a **new** repository instead — the one you
+   are reading, `AndreiBautin/Dashboard` — which has never contained the data in
+   any commit, reachable or otherwise. The original repository still exists,
+   still private, renamed to `AndreiBautin/Dashboard-archive` so that this one
+   could take the name.
 
    The general lesson: a force-push is not a delete. If secrets have reached a
    remote, rotate them; if data cannot be rotated, publish from somewhere it

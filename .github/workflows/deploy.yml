@@ -105,7 +105,7 @@ jobs:
           done
 
           test "$code" = "200" || { echo "::error::Site returned $code"; exit 1; }
-          grep -q "<title>Vantage</title>" body.html \
+          grep -q "<title>Dashboard</title>" body.html \
             || { echo "::error::Response did not contain the app's title."; cat body.html; exit 1; }
           echo "Live site responded 200 and served the app shell."
 
@@ -134,6 +134,6 @@ jobs:
           # rule available to change that. So this asserts on the body, and
           # docs/DEPLOYMENT.md states the limitation rather than hiding it.
           curl -sS "${BASE}social" -o deep.html
-          grep -q "<title>Vantage</title>" deep.html \
+          grep -q "<title>Dashboard</title>" deep.html \
             || { echo "::error::Deep link did not serve the SPA fallback."; exit 1; }
           echo "Deep link served the app shell."
