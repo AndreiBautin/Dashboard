@@ -4,7 +4,10 @@ import { LayoutDashboard, Dumbbell, Wallet, Users, Settings } from "lucide-react
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
+  // "Overview" rather than "Dashboard": the app itself is called Dashboard, so
+  // labelling its home route the same made the sidebar read Dashboard →
+  // Dashboard. The route is still "/".
+  { to: "/", label: "Overview", icon: LayoutDashboard, end: true },
   { to: "/fitness", label: "Fitness", icon: Dumbbell, end: false },
   { to: "/finance", label: "Finance", icon: Wallet, end: false },
   { to: "/social", label: "Social", icon: Users, end: false },
