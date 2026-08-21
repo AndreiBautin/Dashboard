@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Vantage.Infrastructure</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+    <!--
+      Explicit direct reference, matching the version everything else here
+      pins. Microsoft.EntityFrameworkCore.Design (below) is PrivateAssets="all",
+      so its own floor on this package (>= 9.0.4) doesn't propagate to
+      downstream consumers; only Npgsql.EntityFrameworkCore.PostgreSQL's
+      laxer [9.0.1, 10.0.0) range does. Without this, Vantage.Api's own
+      restore settles on 9.0.1, a different physical assembly than the 9.0.4
+      APIs this project actually compiles against, which builds fine but
+      throws FileNotFoundException at runtime once the API host tries to
+      load it.
+    -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="9.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Vantage.Application\Vantage.Application.csproj" />
+    <!-- For DemoDataset. Local development seeding and the public demo share
+         one fixture, so the repository holds a single description of the
+         sample data and the privacy tests cover both paths. -->
+    <ProjectReference Include="..\Vantage.Demo\Vantage.Demo.csproj" />
+  </ItemGroup>
+
+</Project>

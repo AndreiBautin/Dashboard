@@ -1,0 +1,167 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Cancel a superseded run rather than paying for both.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend — build & test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: backend/global.json
+
+      # Locked mode: fail if a resolved package version differs from what
+      # packages.lock.json records, rather than quietly building against
+      # something other than what was tested. The .NET counterpart of `npm ci`.
+      - name: Restore (locked)
+        run: dotnet restore backend/Vantage.sln -p:RestoreLockedMode=true
+
+      - name: Build
+        run: dotnet build backend/Vantage.sln -c Release --no-restore
+
+      - name: Test
+        run: dotnet test backend/Vantage.sln -c Release --no-build --logger "console;verbosity=normal"
+
+      # Warnings are not errors in this repository's day-to-day build, but the
+      # baseline is genuinely zero, so a new one is worth surfacing.
+      - name: Fail on new build warnings
+        run: |
+          dotnet build backend/Vantage.sln -c Release --no-restore -warnaserror
+
+  frontend:
+    name: Frontend — build, lint & test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      # `ci`, not `install`: installs exactly the lockfile and fails if
+      # package.json and the lockfile disagree.
+      - name: Install (frozen lockfile)
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      - name: Build (default / API mode)
+        run: npm run build
+
+  demo-build:
+    name: Demo build (the configuration that ships)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: backend/global.json
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      # Required to target browser-wasm. Not installed by default on the
+      # runner, and its absence is the single most likely reason this job
+      # fails on a fresh runner image.
+      - name: Install the wasm-tools workload
+        run: dotnet workload install wasm-tools
+
+      - name: Install (frozen lockfile)
+        run: npm ci
+        working-directory: frontend
+
+      # The deployed artifact is built from a different configuration than
+      # `npm run build`, so building only the default would let a demo-only
+      # failure reach deploy time undetected. Both configurations that ship
+      # get built here.
+      - name: Build the demo bundle
+        run: npm run build:demo
+        working-directory: frontend
+
+      - name: Check the WebAssembly runtime was actually staged
+        run: |
+          test -f frontend/dist/vantage-wasm/_framework/dotnet.js
+          test -f frontend/dist/vantage-wasm/_framework/dotnet.native.wasm
+          test -f frontend/dist/404.html
+          test -f frontend/dist/.nojekyll
+          echo "Demo bundle contains the runtime, the SPA fallback, and .nojekyll."
+
+  security:
+    name: Security — dependency audit & secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history: a secret scan that only sees the tip commit would
+          # miss anything that was committed and later removed, which is the
+          # main case worth scanning for.
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: backend/global.json
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install (frozen lockfile)
+        run: npm ci
+        working-directory: frontend
+
+      # Gated at `high`. Deliberately not at `low`: this project's low-severity
+      # findings are all in build-time transitive dependencies that never reach
+      # a browser, and a gate that cries wolf is a gate people learn to ignore.
+      - name: npm audit
+        run: npm audit --audit-level=high
+        working-directory: frontend
+
+      - name: Restore (locked)
+        run: dotnet restore backend/Vantage.sln -p:RestoreLockedMode=true
+
+      - name: NuGet vulnerability audit
+        run: |
+          dotnet list backend/Vantage.sln package --vulnerable --include-transitive 2>&1 | tee audit.txt
+          # `dotnet list package` exits 0 even when it finds something, so the
+          # output has to be inspected rather than the exit code trusted.
+          if grep -qiE '(High|Critical)' audit.txt; then
+            echo "::error::High or critical severity NuGet vulnerabilities found."
+            exit 1
+          fi
+          echo "No high or critical NuGet vulnerabilities."
+
+      - name: Secret scan (full history)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

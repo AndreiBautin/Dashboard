@@ -1,0 +1,31 @@
+# Normalize line endings on commit, check out LF everywhere.
+#
+# Without this, a Windows checkout stores CRLF for some files and a Linux CI
+# runner reads them back as changed. The result is a formatting or diff gate
+# that passes locally and fails in CI for reasons that have nothing to do with
+# the change under review — worse than having no gate at all, because it
+# teaches people to ignore red.
+#
+# This repository was already in that state: KnownAppSettings.cs was CRLF in
+# the working tree while git wanted LF.
+* text=auto eol=lf
+
+# Binary assets must never be touched.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.wasm binary
+*.dat binary
+*.bundle binary
+
+# Windows-only scripts genuinely need CRLF: cmd.exe mis-parses LF-only batch
+# files, so this one is an exception rather than an oversight.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Generated lockfiles: keep them out of diffs and language statistics.
+package-lock.json -diff linguist-generated=true

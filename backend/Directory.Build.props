@@ -1,0 +1,19 @@
+<Project>
+
+  <PropertyGroup>
+    <!--
+      Pin transitive dependencies with packages.lock.json so CI can restore in
+      locked mode and fail loudly when a resolved version drifts, rather than
+      silently building against something different from what was tested
+      locally. This is the .NET equivalent of `npm ci`.
+
+      CI restores with the RestoreLockedMode property set to true.
+
+      After changing any PackageReference, regenerate the lock files by
+      running `dotnet restore backend/Vantage.sln` with the ForceEvaluate
+      option (see docs/DEPLOYMENT.md for the exact command).
+    -->
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+
+</Project>

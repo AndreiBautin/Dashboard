@@ -1,0 +1,133 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Deployment authenticates with the workflow's own token. There is no account
+# to create, no secret to store, and nothing to rotate — which is a large part
+# of why Pages was chosen over a host that would need all three.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two deploys race. `cancel-in-progress: false` so a queued deploy
+# finishes rather than being dropped — the last push should win, but only
+# after the one already publishing has landed.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build the demo bundle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: backend/global.json
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install the wasm-tools workload
+        run: dotnet workload install wasm-tools
+
+      - name: Install (frozen lockfile)
+        run: npm ci
+        working-directory: frontend
+
+      - name: Build
+        run: npm run build:demo
+        working-directory: frontend
+        env:
+          # A project page is served from /<repo>/. This single value drives
+          # both Vite's `base` and the router's basename — see
+          # frontend/src/lib/config.ts for why they must not be set separately.
+          VITE_BASE_PATH: /${{ github.event.repository.name }}/
+          VITE_COMMIT: ${{ github.sha }}
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/dist
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    # Republished as a job output so the smoke test asserts against the URL
+    # Pages actually served, rather than one reconstructed from the repo name
+    # and assumed to match.
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  smoke-test:
+    name: Smoke-test the live site
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      # A green deploy step only proves an upload succeeded. This proves the
+      # site answered, and that what it served is the app rather than a Pages
+      # error page or a stale artifact.
+      - name: The page loads and is the app
+        run: |
+          URL="${{ needs.deploy.outputs.page_url || format('https://{0}.github.io/{1}/', github.repository_owner, github.event.repository.name) }}"
+          echo "Checking $URL"
+
+          # Pages can take a few seconds to route a first deploy.
+          for attempt in 1 2 3 4 5; do
+            code=$(curl -sS -o body.html -w '%{http_code}' "$URL" || true)
+            [ "$code" = "200" ] && break
+            echo "Attempt $attempt returned $code; retrying in 10s."
+            sleep 10
+          done
+
+          test "$code" = "200" || { echo "::error::Site returned $code"; exit 1; }
+          grep -q "<title>Vantage</title>" body.html \
+            || { echo "::error::Response did not contain the app's title."; cat body.html; exit 1; }
+          echo "Live site responded 200 and served the app shell."
+
+      - name: The WebAssembly runtime is reachable
+        run: |
+          BASE="${{ needs.deploy.outputs.page_url || format('https://{0}.github.io/{1}/', github.repository_owner, github.event.repository.name) }}"
+
+          # The single most likely deployment-only failure: Jekyll stripping
+          # _framework/ because .nojekyll went missing. The page would still
+          # load and then fail to start the runtime, so checking the document
+          # alone would not catch it.
+          for asset in dotnet.js dotnet.native.wasm; do
+            code=$(curl -sS -o /dev/null -w '%{http_code}' "${BASE}vantage-wasm/_framework/$asset" || true)
+            test "$code" = "200" \
+              || { echo "::error::${asset} returned $code — is .nojekyll present?"; exit 1; }
+            echo "$asset OK"
+          done
+
+      - name: Client-side routes are served the app, not a bare 404 page
+        run: |
+          BASE="${{ needs.deploy.outputs.page_url || format('https://{0}.github.io/{1}/', github.repository_owner, github.event.repository.name) }}"
+
+          # Note: Pages serves 404.html with a genuine 404 status for unknown
+          # paths. The app renders correctly because the router takes over on
+          # the client, but the status code stays 404 and there is no rewrite
+          # rule available to change that. So this asserts on the body, and
+          # docs/DEPLOYMENT.md states the limitation rather than hiding it.
+          curl -sS "${BASE}social" -o deep.html
+          grep -q "<title>Vantage</title>" deep.html \
+            || { echo "::error::Deep link did not serve the SPA fallback."; exit 1; }
+          echo "Deep link served the app shell."

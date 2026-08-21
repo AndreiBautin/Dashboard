@@ -1,0 +1,33 @@
+# Backend (.NET)
+backend/**/bin/
+backend/**/obj/
+backend/**/.vs/
+*.user
+
+# Frontend (Node)
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+npm-debug.log*
+
+# Editors / OS
+.vs/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Secrets — connection strings are set via `dotnet user-secrets`, never committed
+**/appsettings.*.local.json
+.env
+.env.local
+
+# Orphaned scaffolding artifacts (unused by any code; left over from the dev
+# environment that generated Phase 1 and could not be deleted there)
+/.install1.log
+frontend/src/App.css
+frontend/src/assets/
+
+# Demo build artifacts: the .NET WebAssembly runtime is published into
+# public/ by scripts/build-demo.mjs, never committed.
+frontend/public/vantage-wasm/
