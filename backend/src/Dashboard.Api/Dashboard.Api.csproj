@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Dashboard.Api</RootNamespace>
-    <UserSecretsId>vantage-api-local</UserSecretsId>
+    <UserSecretsId>dashboard-api-local</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
