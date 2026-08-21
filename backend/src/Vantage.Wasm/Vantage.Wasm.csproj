@@ -30,6 +30,22 @@
     <EventSourceSupport>false</EventSourceSupport>
     <WasmEmitSymbolMap>false</WasmEmitSymbolMap>
     <WasmNativeDebugSymbols>false</WasmNativeDebugSymbols>
+
+    <!--
+      The one project opted out of the solution-wide lock files.
+
+      Targeting browser-wasm pulls in SDK-derived packages, notably
+      Microsoft.NET.ILLink.Tasks, whose version tracks the installed .NET
+      runtime patch rather than anything chosen here. Locking it means the
+      lock file records the patch level of whichever machine last ran restore,
+      and CI then fails with NU1004 the moment its runner image differs by a
+      patch. That is a false alarm about a package nobody selected.
+
+      The nine projects holding actual third-party dependencies (EF Core,
+      Npgsql, xUnit) keep locked restore, which is where the value is. This
+      one trades it away rather than lowering the gate for everything.
+    -->
+    <RestorePackagesWithLockFile>false</RestorePackagesWithLockFile>
   </PropertyGroup>
 
   <ItemGroup>
