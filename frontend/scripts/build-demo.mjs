@@ -25,7 +25,7 @@ const wasmProject = join(repoRoot, 'backend', 'src', 'Vantage.Wasm', 'Vantage.Wa
 const appBundle = join(repoRoot, 'backend', 'src', 'Vantage.Wasm', 'bin', 'Release', 'net9.0', 'browser-wasm', 'AppBundle')
 
 /** Where the runtime is served from, relative to the site root. Mirrored in demoApi.ts. */
-const wasmPublicDir = join(frontendDir, 'public', 'vantage-wasm')
+const wasmPublicDir = join(frontendDir, 'public', 'dashboard-wasm')
 
 function run(command, args, options = {}) {
   console.log(`\n> ${command} ${args.join(' ')}`)

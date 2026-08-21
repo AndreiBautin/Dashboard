@@ -30,4 +30,4 @@ frontend/src/assets/
 
 # Demo build artifacts: the .NET WebAssembly runtime is published into
 # public/ by scripts/build-demo.mjs, never committed.
-frontend/public/vantage-wasm/
+frontend/public/dashboard-wasm/

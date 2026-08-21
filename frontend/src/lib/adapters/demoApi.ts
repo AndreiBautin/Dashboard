@@ -59,7 +59,7 @@ let runtime: Promise<DemoExports> | null = null;
  * location.
  */
 async function loadRuntime(): Promise<DemoExports> {
-  const url = `${config.basePath}vantage-wasm/_framework/dotnet.js`;
+  const url = `${config.basePath}dashboard-wasm/_framework/dotnet.js`;
   const { dotnet } = (await import(/* @vite-ignore */ url)) as {
     dotnet: {
       create(): Promise<{

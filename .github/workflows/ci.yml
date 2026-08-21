@@ -134,8 +134,8 @@ jobs:
 
       - name: Check the WebAssembly runtime was actually staged
         run: |
-          test -f frontend/dist/vantage-wasm/_framework/dotnet.js
-          test -f frontend/dist/vantage-wasm/_framework/dotnet.native.wasm
+          test -f frontend/dist/dashboard-wasm/_framework/dotnet.js
+          test -f frontend/dist/dashboard-wasm/_framework/dotnet.native.wasm
           test -f frontend/dist/404.html
           test -f frontend/dist/.nojekyll
           echo "Demo bundle contains the runtime, the SPA fallback, and .nojekyll."

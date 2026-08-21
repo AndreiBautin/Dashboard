@@ -118,7 +118,7 @@ jobs:
           # load and then fail to start the runtime, so checking the document
           # alone would not catch it.
           for asset in dotnet.js dotnet.native.wasm; do
-            code=$(curl -sS -o /dev/null -w '%{http_code}' "${BASE}vantage-wasm/_framework/$asset" || true)
+            code=$(curl -sS -o /dev/null -w '%{http_code}' "${BASE}dashboard-wasm/_framework/$asset" || true)
             test "$code" = "200" \
               || { echo "::error::${asset} returned $code — is .nojekyll present?"; exit 1; }
             echo "$asset OK"
