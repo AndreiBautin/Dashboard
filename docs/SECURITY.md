@@ -99,6 +99,14 @@ EF Core with LINQ throughout; no raw SQL, no string-concatenated queries, no
 dynamic SQL anywhere in the repository. React escapes rendered text by
 default, and the app never uses `dangerouslySetInnerHTML`.
 
+### S5 — Credentials in git history · **None found** · Verified
+
+The full history of all eleven original commits was scanned for connection
+strings, keys, tokens, and private-key blocks. Every match was a placeholder
+(`<your-pg-user>`, `placeholder`, `unused`) or a PowerShell `Read-Host` prompt
+that reads a password interactively and never writes it down. Nothing needed
+rotating.
+
 ### S6 — Dependency advisories · **High** · Fixed, except one that has no fix
 
 The audit gates found real advisories on first run, and they were fixed by
@@ -131,14 +139,6 @@ It is therefore accepted **by name**, in one greppable line in `ci.yml`, with
 this justification. Every other high or critical NuGet finding still fails the
 build, and CI emits a notice if the advisory ever stops appearing, so the
 exception gets removed rather than quietly outliving its reason.
-
-### S5 — Credentials in git history · **None found** · Verified
-
-The full history of all eleven original commits was scanned for connection
-strings, keys, tokens, and private-key blocks. Every match was a placeholder
-(`<your-pg-user>`, `placeholder`, `unused`) or a PowerShell `Read-Host` prompt
-that reads a password interactively and never writes it down. Nothing needed
-rotating.
 
 ---
 
