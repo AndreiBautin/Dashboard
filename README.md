@@ -1,6 +1,6 @@
 # Dashboard
 
-> **Archived — absorbed into [Lift](https://github.com/AndreiBautin/Lift).**
+> **Archived — absorbed into [LifeOS](https://github.com/AndreiBautin/LifeOS).**
 >
 > Dashboard was never an area; it was the machinery by which areas get
 > scored, and absorbing it is what let five other areas score themselves.
@@ -8,7 +8,7 @@
 > `domain/review/`, and its vocabulary — improved, regressed, stagnant,
 > insufficient-data — is the vocabulary the whole hub uses.
 >
-> Live at https://andreibautin.github.io/Lift/. This repository is kept for its history and is no
+> Live at https://andreibautin.github.io/LifeOS/. This repository is kept for its history and is no
 > longer developed.
 
 A monthly review dashboard for the parts of life that don't send you a report.
