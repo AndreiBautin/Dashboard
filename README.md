@@ -1,5 +1,16 @@
 # Dashboard
 
+> **Archived — absorbed into [Lift](https://github.com/AndreiBautin/Lift).**
+>
+> Dashboard was never an area; it was the machinery by which areas get
+> scored, and absorbing it is what let five other areas score themselves.
+> Its five evaluator classes are now one exhaustive switch in the hub's
+> `domain/review/`, and its vocabulary — improved, regressed, stagnant,
+> insufficient-data — is the vocabulary the whole hub uses.
+>
+> Live at https://andreibautin.github.io/Lift/. This repository is kept for its history and is no
+> longer developed.
+
 A monthly review dashboard for the parts of life that don't send you a report.
 
 Once a month you sit down for ten minutes and answer one question honestly:
